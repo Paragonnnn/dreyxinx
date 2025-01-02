@@ -122,9 +122,8 @@ const Story = ({ openMenu, openSignIn }) => {
     }
   };
 
-  const bigLike = document.getElementById("bigLike");
-  console.log(bigLike);
   const doubleClickToLike = (e) => {
+    const bigLike =  document.getElementById("bigLike");
     setLikePosition({
       x: e.pageX - +window.getComputedStyle(bigLike).width.slice(0, -2) / 2,
       y: e.pageY - +window.getComputedStyle(bigLike).height.slice(0, -2) / 2,
@@ -297,6 +296,7 @@ const Story = ({ openMenu, openSignIn }) => {
               className={`${
                 showLike ? "block animate-like" : "hidden"
               } absolute text-9xl text-red-500`}
+
               id="bigLike"
               style={{
                 left: `${likePosition.x}`,
