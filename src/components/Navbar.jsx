@@ -30,6 +30,7 @@ const Navbar = ({ openMenu, setOpenMenu }) => {
         console.log(response.data);
         setAccessToken(null);
         notifySuccess(response.data.message);
+        localStorage.removeItem("refreshToken");
         window.location.reload();
       })
       .catch((error) => {

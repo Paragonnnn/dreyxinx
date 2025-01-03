@@ -7,7 +7,7 @@ export const userContext = createContext({});
 export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  const refreshToken = Cookies.get("refreshToken");
+  const refreshToken = localStorage.getItem("refreshToken");
   useEffect(() => {
     const getNewAccessToken = async () => {
       try {
@@ -44,7 +44,7 @@ export const UserContextProvider = ({ children }) => {
   }, [user,accessToken]);
   return (
     <userContext.Provider
-      value={{ user, setUser, accessToken, setAccessToken }}
+      value={{ user, setUser, accessToken, setAccessToken, }}
     >
       {children}
     </userContext.Provider>

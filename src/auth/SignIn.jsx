@@ -29,11 +29,12 @@ const SignIn = ({ setSignInOrSignUp, setOpenSignIn }) => {
     try {
       const response = await api.post("/user/login", formData, {
         withCredentials: true,
-        
+
       });
       console.log(response.data);
       setOpenSignIn(false);
       notifySuccess("Sign in successful");
+      localStorage.setItem("refreshToken", response.data.refreshToken);
     } catch (error) {
       console.log(error);
       notifyError(error.response.data.message);
