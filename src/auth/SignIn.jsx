@@ -29,6 +29,7 @@ const SignIn = ({ setSignInOrSignUp, setOpenSignIn }) => {
     try {
       const response = await api.post("/user/login", formData, {
         withCredentials: true,
+        
       });
       console.log(response.data);
       setOpenSignIn(false);

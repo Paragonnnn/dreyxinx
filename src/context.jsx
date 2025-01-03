@@ -7,10 +7,15 @@ export const userContext = createContext({});
 export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const refreshToken = Cookies.get("refreshToken");
   useEffect(() => {
     const getNewAccessToken = async () => {
       try {
-        const response = await api.get("/user/refresh-token", {
+        const response = await api.get("/user/refresh-token",{
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+          },
+        }, {
           withCredentials: true,
         });
         setAccessToken(response.data.accessToken);
