@@ -117,6 +117,11 @@ const Story = ({ openMenu, openSignIn }) => {
       toast.error(error.response.data.message, {
         theme: "dark",
       });
+      toast.error(error.message, {
+        theme: "dark",
+      });
+      
+
     } finally {
       setLiking(false);
     }

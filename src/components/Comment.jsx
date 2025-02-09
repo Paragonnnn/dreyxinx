@@ -164,7 +164,7 @@ const Comment = ({
                   <button
                     className={`${
                       showDeleteBtn === index ? "block" : "hidden"
-                    } absolute right-2 top-4 bg-darkBg px-2 py-1 text-white rounded-sm animate-deleteBtn`}
+                    } absolute right-2 top-6 bg-darkBg px-2 py-1 text-white rounded-sm animate-deleteBtn`}
                     ref={deleteBtnRef}
                     onClick={() => deleteComment(index)}
                   >

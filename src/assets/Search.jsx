@@ -1,8 +1,8 @@
 import React from "react";
 
-const SearchSvg = () => {
+const SearchSvg = ({style}) => {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className=' stroke-white h-5'>
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${style}`}>
       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
       <g
         id="SVGRepo_tracerCarrier"

@@ -56,8 +56,19 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
       </Link>
       <div className=" col-span-1 flex justify-end">
         {user?.user ? (
-          <div className=" cursor-pointer">
-            {user.user.username}
+          <div className=" cursor-pointer flex gap-2 items-center">
+            {/* <div>{user.user.username}</div> */}
+            <div className=" h-fit w-fit rounded-full flex items-center overflow-hidden">
+              <img
+                src={`${
+                  user.user.profile_picture
+                    ? user.user.profile_picture
+                    : "https://res.cloudinary.com/drxjxycnn/image/upload/v1738684543/stories/avatar.jpg"
+                } `}
+                alt=""
+                className=" object-cover h-5 w-5"
+              />
+            </div>
           </div>
         ) : (
           <div
@@ -72,11 +83,7 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
           </div>
         )}
       </div>
-      {/* <div className=" flex items-center gap-1 cursor-pointer hover:opacity-80" onClick={() => {setOpenSignIn(true); console.log(openSignIn);
-      }}>
-        <div className=" ">Sign In</div>
-        <User />
-      </div> */}
+     
     </header>
   );
 };

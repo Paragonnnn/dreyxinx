@@ -45,7 +45,7 @@ const Navbar = ({ openMenu, setOpenMenu }) => {
       } bg-darkBg w-[300px] text-white px-5 py-6 fixed h-full transition-all duration-500 top-0 z-50`}
     >
       <section className=" flex items-center justify-between">
-        <SearchSvg />
+        <SearchSvg style={`h-5 stroke-white`}/>
         <button
           className=" font-medium text-3xl cursor-pointer"
           onClick={closeMenu}

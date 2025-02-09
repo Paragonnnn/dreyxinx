@@ -1,14 +1,16 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 import Google from "../assets/Google";
 import api from "../api";
 import { toast } from "react-toastify";
 import { userContext } from "../context";
+import { LuLoader2 } from "react-icons/lu";
 
 const SignIn = ({ setSignInOrSignUp, setOpenSignIn }) => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+  const [signingIn, setSigningIn] = useState(false);
   // const { accessToken,setAccessToken } = useContext(userContext);
 
   const notifySuccess = (message) =>
@@ -26,17 +28,21 @@ const SignIn = ({ setSignInOrSignUp, setOpenSignIn }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSigningIn(true);
     try {
       const response = await api.post("/user/login", formData, {
         withCredentials: true,
-
       });
       console.log(response.data);
       setOpenSignIn(false);
+      setSignInOrSignUp(false);
+      window.location.reload();
       notifySuccess("Sign in successful");
       localStorage.setItem("refreshToken", response.data.refreshToken);
     } catch (error) {
       console.log(error);
+      setSigningIn(false);
+      notifyError(error.message);
       notifyError(error.response.data.message);
     }
   };
@@ -89,13 +95,18 @@ const SignIn = ({ setSignInOrSignUp, setOpenSignIn }) => {
             className="w-full px-4 py-2 mb-7 rounded mt-1 outline outline-gray-400 outline-1 focus:ring-2 focus:ring-gray bg-transparent text-white"
             required
           />
-
-          <button
-            className="w-full bg-gray-300 text-black py-2 rounded font-semibold mb-4"
-            type="submit"
-          >
-            Sign In
-          </button>
+          {signingIn ? (
+            <div className="w-full bg-blue-700 text-xl text-white py-2 rounded font-semibold mb-4 flex items-center justify-center">
+              <LuLoader2 className=" animate-spin " />
+            </div>
+          ) : (
+            <button
+              className="w-full bg-blue-700 text-white py-2 rounded font-semibold mb-4"
+              type="submit"
+            >
+              Sign In
+            </button>
+          )}
         </form>
 
         <div className="flex items-center justify-between mb-4">

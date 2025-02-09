@@ -11,11 +11,12 @@ import Navbar from "./components/Navbar";
 import Stories from "./components/Stories";
 import { ToastContainer } from "react-toastify";
 import { UserContextProvider } from "./context.jsx";
+import Profile from "./components/Profile.jsx";
 
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openSignIn, setOpenSignIn] = useState(false);
-  const [SignInOrSignUp, setSignInOrSignUp] = useState("signUp");
+  const [SignInOrSignUp, setSignInOrSignUp] = useState("signIn");
 
   const clickOverlay = () => {
     setOpenMenu(false);
@@ -60,6 +61,7 @@ function App() {
         {/* <Route path="/sign-in" element={<SignIn />} /> */}
 
         <Route path="/:id/:title" element={<Story openMenu={openMenu} openSignIn={openSignIn}/>} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
     </UserContextProvider>
