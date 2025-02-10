@@ -10,9 +10,12 @@ import {
   IoCheckmarkCircleOutline,
 } from "react-icons/io5";
 import { FcCancel } from "react-icons/fc";
+import { validateEmail } from "../tools";
+import { FaAnglesDown } from "react-icons/fa6";
 
 const Profile = () => {
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [formData, setFormData] = useState({
     username: "",
@@ -47,6 +50,8 @@ const Profile = () => {
 
   const handleFileChange = (e) => {
     setImage(e.target.files[0]);
+    console.log(URL.createObjectURL(e.target.files[0]));
+    setImagePreview(URL.createObjectURL(e.target.files[0]));
   };
 
   const handleUpload = async () => {
@@ -72,6 +77,8 @@ const Profile = () => {
       );
       setUploadedImage(response.data.url);
       setUploadingImage(false);
+      setImage(null);
+      setImagePreview(null)
       console.log(response);
       setFormData((prev) => ({ ...prev, profile_picture: response.data.url }));
       toast.success("Image uploaded successfully", {
@@ -124,6 +131,12 @@ const Profile = () => {
     return false;
   };
   const saveChanges = async () => {
+    if (!validateEmail(formData.email)) {
+      toast.error("Invalid email format", {
+        theme: "dark",
+      });
+      return;
+    }
     setSaving(true);
     try {
       if (changesAvailable()) {
@@ -167,7 +180,9 @@ const Profile = () => {
             <div className="flex justify-center gap-4 h-fit rounded-full items-center overflow-hidden w-fit">
               <img
                 src={
-                  uploadedImage
+                  imagePreview
+                    ? imagePreview
+                    : uploadedImage
                     ? uploadedImage
                     : formData.profile_picture ||
                       "https://res.cloudinary.com/drxjxycnn/image/upload/v1738684543/stories/avatar.jpg"
@@ -188,6 +203,11 @@ const Profile = () => {
               onChange={handleFileChange}
             />
           </div>
+          {image && (
+            <div className="flex items-center gap-1 text-gray-500 text-[8px]">
+              Click <FaAnglesDown /> to upload
+            </div>
+          )}
           {uploadingImage ? (
             <div className=" px-4 bg-blue-500  text-white py-1 rounded  mb-4 flex items-center justify-center gap-1 cursor-not-allowed">
               <LuLoader2 className=" animate-spin text-md font-semibold" />
@@ -234,6 +254,7 @@ const Profile = () => {
               type="email"
               name="email"
               value={formData.email}
+              required
               onChange={(e) => {
                 handleInputChange(e);
                 checkIfEmailExists(e.target.value);
