@@ -12,6 +12,7 @@ import Stories from "./components/Stories";
 import { ToastContainer } from "react-toastify";
 import { UserContextProvider } from "./context.jsx";
 import Profile from "./components/Profile.jsx";
+import Bookmarks from "./components/Bookmarks.jsx";
 
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -62,6 +63,7 @@ function App() {
 
         <Route path="/:id/:title" element={<Story openMenu={openMenu} openSignIn={openSignIn}/>} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/bookmark" element={<Bookmarks />} />
       </Routes>
       <Footer />
     </UserContextProvider>

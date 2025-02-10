@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import SearchSvg from "../assets/Search";
 import Menu from "../assets/Menu";
 import User from "../assets/User";
@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
   const { user, setAccessToken } = useContext(userContext);
+  const [toggleDropDown, setToggleDropDown] = useState(false);
 
   const notifySuccess = (message) =>
     toast.success(message, {
@@ -35,8 +36,11 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
         console.log(error);
       });
   };
+  const handleToggleDropDown = () => {
+    setToggleDropDown(!toggleDropDown);
+  };
   return (
-    <header className=" bg-darkBg text-white grid grid-cols-3 justify-between px-1 sm:px-2 md:px-4 items-center py-1 sticky top-0 z-30">
+    <header className=" bg-darkBg text-white grid grid-cols-3 justify-between px-1 sm:px-2 md:px-4 items-center py-1 sticky top-0 z-30 ">
       <Menu openMenu={openMenu} setOpenMenu={setOpenMenu} />
       {/* <div className="flex gap-4 border-b pb-1 w-3/5">
         <SearchSvg />
@@ -56,7 +60,10 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
       </Link>
       <div className=" col-span-1 flex justify-end">
         {user?.user ? (
-          <div className=" cursor-pointer flex gap-2 items-center">
+          <div
+            className=" cursor-pointer flex gap-2 items-center relative"
+            onClick={handleToggleDropDown}
+          >
             {/* <div>{user.user.username}</div> */}
             <div className=" h-fit w-fit rounded-full flex items-center overflow-hidden">
               <img
@@ -69,6 +76,13 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
                 className=" object-cover h-5 w-5"
               />
             </div>
+            {toggleDropDown && (
+              <ul className=" absolute top-[30px] right-0 flex flex-col bg-darkBg px-3 py-1 gap-1 rounded">
+                <Link to={`/profile`}>Profile</Link>
+                <Link to={`/bookmark`}>Bookmarks</Link>
+
+              </ul>
+            )}
           </div>
         ) : (
           <div
@@ -83,7 +97,6 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
           </div>
         )}
       </div>
-     
     </header>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useRef, useContext, useEffect } from "react";
 import React from "react";
 import api from "../api";
-import { CiEdit } from "react-icons/ci";
+import { RiEdit2Fill } from "react-icons/ri";
 import { userContext } from "../context";
 import { toast } from "react-toastify";
 import { LuLoader2 } from "react-icons/lu";
@@ -61,11 +61,15 @@ const Profile = () => {
     imageData.append("image", image);
 
     try {
-      const response = await api.post("/upload", imageData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.post(
+        "/user/upload-profile-picture",
+        imageData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setUploadedImage(response.data.url);
       setUploadingImage(false);
       console.log(response);
@@ -130,6 +134,7 @@ const Profile = () => {
         console.log(response.data);
         setSaving(false);
         setUser({ user: response.data });
+        setImage(null);
         toast.success("Profile updated successfully", {
           theme: "dark",
         });
@@ -159,7 +164,7 @@ const Profile = () => {
       {user ? (
         <div className="flex justify-center flex-col items-center gap-4">
           <div className="relative">
-            <div className="flex justify-center gap-4 h-12 rounded-full items-center overflow-hidden w-fit">
+            <div className="flex justify-center gap-4 h-fit rounded-full items-center overflow-hidden w-fit">
               <img
                 src={
                   uploadedImage
@@ -168,11 +173,11 @@ const Profile = () => {
                       "https://res.cloudinary.com/drxjxycnn/image/upload/v1738684543/stories/avatar.jpg"
                 }
                 alt="Profile"
-                className="h-12 w-12 rounded-full object-cover"
+                className="h-20 w-20 rounded-full object-cover"
               />
             </div>
-            <CiEdit
-              className="text-xl absolute bottom-[-2px] right-[-2px] cursor-pointer"
+            <RiEdit2Fill
+              className="text-xl absolute bottom-[-5px] right-[-5px] cursor-pointer"
               onClick={() => fileInputRef.current.click()}
             />
             <input
@@ -184,7 +189,7 @@ const Profile = () => {
             />
           </div>
           {uploadingImage ? (
-            <div className=" px-4 bg-blue-500  text-white py-1 rounded  mb-4 flex items-center justify-center gap-1">
+            <div className=" px-4 bg-blue-500  text-white py-1 rounded  mb-4 flex items-center justify-center gap-1 cursor-not-allowed">
               <LuLoader2 className=" animate-spin text-md font-semibold" />
               Uploading...
             </div>

@@ -11,6 +11,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import Comment from "./Comment";
 import { FaRegHeart, FaShare } from "react-icons/fa";
+import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
 
 const Story = ({ openMenu, openSignIn }) => {
   const { id } = useParams();
@@ -24,12 +25,13 @@ const Story = ({ openMenu, openSignIn }) => {
   const [deletingComment, setDeletingComment] = useState(false);
   const [error, setError] = useState(null);
   const [showDeleteBtn, setShowDeleteBtn] = useState(null);
-  const { user } = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
   const currentUser = user?.user;
   const deleteBtnRef = useRef(null);
   const [likePosition, setLikePosition] = useState({ x: 0, y: 0 });
   const [showLike, setShowLike] = useState(false);
   const [openReply, setOpenReply] = useState(false);
+  const [bookmarking, setBookmarking] = useState(false);
 
   TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo("en-US");
@@ -50,20 +52,6 @@ const Story = ({ openMenu, openSignIn }) => {
     fetchStory();
   }, [id]);
 
-  //   useEffect(() => {
-  //     const handleClickOutside = (e) => {
-  //         if (deleteBtnRef.current && !deleteBtnRef.current.contains(e.target)) {
-  //             setShowDeleteBtn(false);
-  //         }
-  //     };
-
-  //     window.addEventListener("click", handleClickOutside);
-  //     return () => {
-  //         window.removeEventListener("click", handleClickOutside);
-  //         console.log("removed");
-  //     };
-  // }, []);
-
   const checkIfLiked = () => {
     if (currentUser) {
       if (
@@ -75,9 +63,8 @@ const Story = ({ openMenu, openSignIn }) => {
     return false;
   };
 
-  const likeElement = document.getElementById("like");
-
   const likeStory = async (e) => {
+    const likeElement = document.getElementById("like");
     if (!currentUser) {
       toast.error("Please sign in to like a story", {
         theme: "dark",
@@ -120,15 +107,13 @@ const Story = ({ openMenu, openSignIn }) => {
       toast.error(error.message, {
         theme: "dark",
       });
-      
-
     } finally {
       setLiking(false);
     }
   };
 
   const doubleClickToLike = (e) => {
-    const bigLike =  document.getElementById("bigLike");
+    const bigLike = document.getElementById("bigLike");
     setLikePosition({
       x: e.pageX - +window.getComputedStyle(bigLike).width.slice(0, -2) / 2,
       y: e.pageY - +window.getComputedStyle(bigLike).height.slice(0, -2) / 2,
@@ -231,6 +216,88 @@ const Story = ({ openMenu, openSignIn }) => {
       setDeletingComment(false);
     }
   };
+  const toggleBookmark = async () => {
+    if (!currentUser) {
+      toast.error("Please sign in to bookmark a story", {
+        theme: "dark",
+      });
+      return;
+    }
+
+    if (bookmarking) return;
+    setBookmarking(true);
+    // if (checkIfBookmarked()) {
+    //   setUser((prevUser) => ({
+    //     ...prevUser,
+    //     user: {
+    //       ...prevUser.user,
+    //       bookmarks: prevUser.user.bookmarks.filter(
+    //         (bookmark) => bookmark._id !== id
+    //       ),
+    //     },
+    //   }));
+    // } else {
+    //   setUser((prevUser) => ({
+    //     ...prevUser,
+    //     user: {
+    //       ...prevUser.user,
+    //       bookmarks: [...prevUser.user.bookmarks].push(story),
+    //     },
+    //   }));
+    // }
+    if (checkIfBookmarked()) {
+      setUser((prevUser) => ({
+        ...prevUser,
+        user: {
+          ...prevUser.user,
+          bookmarks: prevUser.user.bookmarks.filter(
+            (bookmark) => bookmark !== id
+          ),
+        },
+      }));
+    } else {
+      setUser((prevUser) => ({
+        ...prevUser,
+        user: {
+          ...prevUser.user,
+          bookmarks: prevUser.user.bookmarks.push(id),
+        },
+      }));
+    }
+    console.log(checkIfBookmarked());
+    try {
+      const response = await api.post(
+        `/user/toggle-bookmark/${currentUser._id}`,
+        {
+          story_id: id,
+        }
+      );
+      console.log(response.data);
+      console.log(currentUser);
+      setUser({ user: response.data.data });
+      console.log(user);
+      toast.success(response.data.message, {
+        theme: "dark",
+      });
+      setBookmarking(false);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message, {
+        theme: "dark",
+      });
+      setBookmarking(false);
+    }
+  };
+  console.log(currentUser?.bookmarks);
+
+  const checkIfBookmarked = () => {
+    if (currentUser && Array.isArray(currentUser.bookmarks)) {
+      if (currentUser.bookmarks.includes(id)) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   return (
     <div
@@ -301,7 +368,6 @@ const Story = ({ openMenu, openSignIn }) => {
               className={`${
                 showLike ? "block animate-like" : "hidden"
               } absolute text-9xl text-red-500`}
-
               id="bigLike"
               style={{
                 left: `${likePosition.x}`,
@@ -326,6 +392,14 @@ const Story = ({ openMenu, openSignIn }) => {
                 />
               </div>
               <div className=" text-xs">{story?.likes_count}</div>
+              <div className=" relative " onClick={toggleBookmark}>
+                <IoBookmarkOutline className="" />
+                <IoBookmark
+                  className={`${
+                    checkIfBookmarked() ? " fill-darkBg" : " fill-transparent"
+                  } absolute top-0`}
+                />
+              </div>
             </div>
           </section>
         </section>
