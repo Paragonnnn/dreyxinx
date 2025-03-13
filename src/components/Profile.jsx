@@ -30,6 +30,7 @@ const Profile = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const { user, setUser } = useContext(userContext);
+  console.log(user)
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -49,9 +50,12 @@ const Profile = () => {
   };
 
   const handleFileChange = (e) => {
-    setImage(e.target.files[0]);
-    console.log(URL.createObjectURL(e.target.files[0]));
-    setImagePreview(URL.createObjectURL(e.target.files[0]));
+    console.log("change");
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]);
+      console.log(URL.createObjectURL(e.target.files[0]));
+      setImagePreview(URL.createObjectURL(e.target.files[0]));
+    }
   };
 
   const handleUpload = async () => {
@@ -78,7 +82,7 @@ const Profile = () => {
       setUploadedImage(response.data.url);
       setUploadingImage(false);
       setImage(null);
-      setImagePreview(null)
+      setImagePreview(null);
       console.log(response);
       setFormData((prev) => ({ ...prev, profile_picture: response.data.url }));
       toast.success("Image uploaded successfully", {
@@ -216,7 +220,7 @@ const Profile = () => {
           ) : (
             <button
               onClick={handleUpload}
-              className="bg-blue-500 text-white px-3 py-1 rounded flex gap-2 items-center hover:bg-blue-600"
+              className={`${!image ? "bg-opacity-50 cursor-not-allowed hover:bg-opacity-50" : ''} bg-blue-500 text-white px-3 py-1 rounded flex gap-2 items-center hover:bg-blue-600`}
             >
               <IoCloudUploadOutline className="h-4 w-4" />
               Upload

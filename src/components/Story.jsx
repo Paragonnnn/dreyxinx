@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { LuLoader2 } from "react-icons/lu";
-import { formatDate } from "../tools";
+import { copyToClipboard, formatDate } from "../tools";
 import api from "../api";
 import { toast } from "react-toastify";
 import { userContext } from "../context";
@@ -11,7 +11,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import Comment from "./Comment";
 import { FaRegHeart, FaShare } from "react-icons/fa";
-import { IoBookmark, IoBookmarkOutline } from "react-icons/io5";
+import { IoBookmark, IoBookmarkOutline, IoCopyOutline } from "react-icons/io5";
 
 const Story = ({ openMenu, openSignIn }) => {
   const { id } = useParams();
@@ -32,9 +32,12 @@ const Story = ({ openMenu, openSignIn }) => {
   const [showLike, setShowLike] = useState(false);
   const [openReply, setOpenReply] = useState(false);
   const [bookmarking, setBookmarking] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  
 
   TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo("en-US");
+  const bookmarkRef = useRef()
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -216,6 +219,21 @@ const Story = ({ openMenu, openSignIn }) => {
       setDeletingComment(false);
     }
   };
+  useEffect(() => {
+    if (checkIfBookmarked()) {
+      setBookmarked(true)
+    } else {
+      setBookmarked(false)
+    }
+  },[currentUser])
+  const checkIfBookmarked = () => {
+    if (currentUser && Array.isArray(currentUser.bookmarks)) {
+      if (currentUser.bookmarks.includes(id)) {
+        return true;
+      }
+    }
+    return false;
+  };
   const toggleBookmark = async () => {
     if (!currentUser) {
       toast.error("Please sign in to bookmark a story", {
@@ -226,26 +244,8 @@ const Story = ({ openMenu, openSignIn }) => {
 
     if (bookmarking) return;
     setBookmarking(true);
-    // if (checkIfBookmarked()) {
-    //   setUser((prevUser) => ({
-    //     ...prevUser,
-    //     user: {
-    //       ...prevUser.user,
-    //       bookmarks: prevUser.user.bookmarks.filter(
-    //         (bookmark) => bookmark._id !== id
-    //       ),
-    //     },
-    //   }));
-    // } else {
-    //   setUser((prevUser) => ({
-    //     ...prevUser,
-    //     user: {
-    //       ...prevUser.user,
-    //       bookmarks: [...prevUser.user.bookmarks].push(story),
-    //     },
-    //   }));
-    // }
     if (checkIfBookmarked()) {
+      setBookmarked(true)
       setUser((prevUser) => ({
         ...prevUser,
         user: {
@@ -256,6 +256,7 @@ const Story = ({ openMenu, openSignIn }) => {
         },
       }));
     } else {
+      setBookmarked(false)
       setUser((prevUser) => ({
         ...prevUser,
         user: {
@@ -278,6 +279,7 @@ const Story = ({ openMenu, openSignIn }) => {
       console.log(user);
       toast.success(response.data.message, {
         theme: "dark",
+        position: "top-center",
       });
       setBookmarking(false);
     } catch (error) {
@@ -290,14 +292,7 @@ const Story = ({ openMenu, openSignIn }) => {
   };
   console.log(currentUser?.bookmarks);
 
-  const checkIfBookmarked = () => {
-    if (currentUser && Array.isArray(currentUser.bookmarks)) {
-      if (currentUser.bookmarks.includes(id)) {
-        return true;
-      }
-    }
-    return false;
-  };
+
 
   return (
     <div
@@ -331,9 +326,9 @@ const Story = ({ openMenu, openSignIn }) => {
               <div className="  absolute inset-0 bg-white opacity-40 z-[5]"></div>
             )}
             <div className=" z-20">
-              {story?.category.length > 0 ? (
+              {story?.categories.length > 0 ? (
                 <div className=" flex gap-2 z-20">
-                  {story?.category.map((category, index) => (
+                  {story?.categories.map((category, index) => (
                     <div
                       key={index}
                       className=" rounded bg-darkBg text-white w-fit px-2"
@@ -367,7 +362,7 @@ const Story = ({ openMenu, openSignIn }) => {
             <FaHeart
               className={`${
                 showLike ? "block animate-like" : "hidden"
-              } absolute text-9xl text-red-500`}
+              } absolute text-9xl text-red-500 z-10`}
               id="bigLike"
               style={{
                 left: `${likePosition.x}`,
@@ -392,14 +387,13 @@ const Story = ({ openMenu, openSignIn }) => {
                 />
               </div>
               <div className=" text-xs">{story?.likes_count}</div>
-              <div className=" relative " onClick={toggleBookmark}>
+              <div className={` relative cursor-pointer`} onClick={toggleBookmark} >
                 <IoBookmarkOutline className="" />
                 <IoBookmark
-                  className={`${
-                    checkIfBookmarked() ? " fill-darkBg" : " fill-transparent"
-                  } absolute top-0`}
+                  className={` absolute top-0`} style={{fill: `${bookmarked ? "#222222" : 'transparent'}`}} ref={bookmarkRef}
                 />
               </div>
+              <IoCopyOutline onClick={copyToClipboard} className=" cursor-pointer"/>
             </div>
           </section>
         </section>

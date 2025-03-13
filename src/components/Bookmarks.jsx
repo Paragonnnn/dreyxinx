@@ -30,7 +30,7 @@ const Bookmarks = () => {
       <h1>Bookmarks</h1>
       <section>
         {bookmarks?.map((bookmark) => (
-          <div>
+          <div key={bookmark._id}>
             <img src={`${bookmark.cover_image || "https://res.cloudinary.com/drxjxycnn/image/upload/v1738676418/stories/tupac.jpg"}`} alt="" className=" h-10 w-10"/>
             <div>{bookmark.title}</div>
           </div>

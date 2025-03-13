@@ -8,9 +8,15 @@ import cookies from "js-cookie";
 import api from "../api";
 import { toast } from "react-toastify";
 
-const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
+const Header = ({
+  openMenu,
+  setOpenMenu,
+  openSignIn,
+  setOpenSignIn,
+  toggleDropDown,
+  setToggleDropDown,
+}) => {
   const { user, setAccessToken } = useContext(userContext);
-  const [toggleDropDown, setToggleDropDown] = useState(false);
 
   const notifySuccess = (message) =>
     toast.success(message, {
@@ -76,13 +82,6 @@ const Header = ({ openMenu, setOpenMenu, openSignIn, setOpenSignIn }) => {
                 className=" object-cover h-5 w-5"
               />
             </div>
-            {toggleDropDown && (
-              <ul className=" absolute top-[30px] right-0 flex flex-col bg-darkBg px-3 py-1 gap-1 rounded">
-                <Link to={`/profile`}>Profile</Link>
-                <Link to={`/bookmark`}>Bookmarks</Link>
-
-              </ul>
-            )}
           </div>
         ) : (
           <div

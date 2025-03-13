@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { data, story } from "../data";
-import { Link } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { FaCommentDots, FaHeart } from "react-icons/fa";
 import { BsFillCalendarDateFill } from "react-icons/bs";
 import { formatDate, reduceContentLenght } from "../tools";
@@ -14,7 +14,8 @@ const Stories = ({ openMenu, openSignIn }) => {
   const [stories, setStories] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
+  const [searchParam, setSearchParam] = useSearchParams();
+  const page = parseInt(searchParam.get("page")) || 1;
 
   // useEffect(() => {
   //   const fetchStories = async () => {
@@ -42,7 +43,7 @@ const Stories = ({ openMenu, openSignIn }) => {
         const response = await api.get("/story/get-stories", {
           params: { page: page, limit: 12 },
         });
-        console.table(response);
+        console.log(response.data);
         setStories(response.data);
         setLoading(false);
       } catch (error) {
@@ -54,6 +55,24 @@ const Stories = ({ openMenu, openSignIn }) => {
 
     fetchStories();
   }, [page]);
+
+  // useEffect(() => {
+  //   const fetchStories = async () => {
+  //     const response = await api.get("/story/get-stories", {
+  //       params: { page: page, limit: 12 },
+  //     });
+  //     setStories(response.data);
+  //     console.log(response.data);
+  //   };
+  //   const polling = setInterval(() => {
+  //     fetchStories();
+  //   }, 1000);
+  //   return () => clearInterval(polling);
+  // }, [page]);
+
+  const changePage = (page) => {
+    setSearchParam({ page: page });
+  }
 
   return (
     <div
@@ -90,14 +109,22 @@ const Stories = ({ openMenu, openSignIn }) => {
           <div>{error}</div>
         </div>
       )}
+      {
+        stories?.data.length === 0 && !loading && !error && (
+          <div className="flex items-center gap-2">
+            <MdError />
+            <div>No stories available</div>
+          </div>
+        )
+      }
 
-      {stories && !loading && !error && (
-        <div className=" bg-darkBg bg-opacity-5 rounded-md p-4 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
+      {stories?.data.length !== 0 && !loading && !error && (
+        <div className=" bg-darkBg bg-opacity-5 rounded-md p-4 place-items-center grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-4">
           {stories?.data.map((story, index) => {
             return (
               <div className=" mb-4 p-2 sm:p-4" key={story._id}>
                 <div
-                  className={` rounded-md outline-dotted outline-1 outline-darkBg flex flex-col items-center mb-4 relative`}
+                  className={` rounded-md outline-dotted outline-1 outline-darkBg flex flex-col items-center mb-4 relative w-full sm:w-[250px] p-2`}
                 >
                   <img
                     src={`${
@@ -105,14 +132,14 @@ const Stories = ({ openMenu, openSignIn }) => {
                       "https://res.cloudinary.com/drxjxycnn/image/upload/v1738676418/stories/tupac.jpg"
                     }`}
                     alt=""
-                    className=" w-full h-[200px] object-cover rounded-md"
+                    className=" w-full h-[256px] sm:w-[250px] object-cover rounded-md object-top"
                   />
 
                   <Link
                     to={`/${story._id}/${story.title
                       .toLowerCase()
                       .replace(" ", "-")}`}
-                    className=" font-semibold text-xl my-2 z-20"
+                    className=" font-semibold text-xl my-2 z-20 text-wrap"
                   >
                     {story.title}
                   </Link>
@@ -146,9 +173,9 @@ const Stories = ({ openMenu, openSignIn }) => {
                 </div>
                 <div>
                   {" "}
-                  {story.category.length > 0 ? (
+                  {story.categories.length > 0 ? (
                     <div className=" flex gap-2 z-20">
-                      {story.category.map((category, index) => (
+                      {story.categories.map((category, index) => (
                         <div
                           key={index}
                           className=" rounded-md text-darkBg outline outline-1 outline-darkBg w-fit px-2  text-[8px]"
@@ -163,7 +190,7 @@ const Stories = ({ openMenu, openSignIn }) => {
                     </div>
                   )}
                 </div>
-                <div>{reduceContentLenght(story.content, 50)}</div>
+                <div>{reduceContentLenght(story.summary, 50)}</div>
                 {/* <div>{story.post.readingTime}</div> */}
               </div>
             );
@@ -175,11 +202,9 @@ const Stories = ({ openMenu, openSignIn }) => {
           <div className={` flex justify-center items-center`}>
             <div
               className={`${
-                stories.previous
-                  ? "cursor-pointer"
-                  : " hidden"
+                stories.previous ? "cursor-pointer" : " hidden"
               } bg-darkBg text-white rounded-md px-3 py-2 `}
-              onClick={() => stories.previous && setPage(page - 1)}
+              onClick={() => changePage(page - 1)}
             >
               Previous Page
             </div>
@@ -189,11 +214,9 @@ const Stories = ({ openMenu, openSignIn }) => {
           <div className=" flex justify-center items-center ">
             <div
               className={`${
-                stories.next
-                  ? "cursor-pointer"
-                  : " hidden"
+                stories.next ? "cursor-pointer" : " hidden"
               } bg-darkBg text-white rounded-md px-3 py-2`}
-              onClick={() => stories.next && setPage(page + 1)}
+              onClick={() => changePage(page + 1)}
             >
               Next Page
             </div>

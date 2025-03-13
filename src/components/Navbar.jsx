@@ -3,6 +3,7 @@ import SearchSvg from "../assets/Search";
 import api from "../api";
 import { toast } from "react-toastify";
 import { userContext } from "../context";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ openMenu, setOpenMenu }) => {
   const closeMenu = () => {
@@ -45,7 +46,7 @@ const Navbar = ({ openMenu, setOpenMenu }) => {
       } bg-darkBg w-[300px] text-white px-5 py-6 fixed h-full transition-all duration-500 top-0 z-50`}
     >
       <section className=" flex items-center justify-between">
-        <SearchSvg style={`h-5 stroke-white`}/>
+        <SearchSvg style={`h-5 stroke-white`} />
         <button
           className=" font-medium text-3xl cursor-pointer"
           onClick={closeMenu}
@@ -61,6 +62,14 @@ const Navbar = ({ openMenu, setOpenMenu }) => {
             Logout
           </div>
         )}
+        {currentUser && currentUser.role === "author" && (
+          <Link to={`/dashboard/${currentUser._id}`} onClick={() => setOpenMenu(false)}>Dashboard</Link>
+        )}
+        {
+          currentUser?.role === 'admin' && (
+            <Link to={`/admin-dashboard`} onClick={() => setOpenMenu(false)}>Admin Dashboard</Link>
+          )
+        }
       </section>
     </nav>
   );
